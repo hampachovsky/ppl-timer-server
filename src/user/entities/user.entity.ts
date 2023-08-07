@@ -1,7 +1,11 @@
+import { Exclude } from 'class-transformer';
+import { Project } from 'src/projects/entities/project.entity';
+import { Timer } from 'src/timers/entities/timer.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -19,6 +23,7 @@ export class User {
   @Column()
   username: string;
 
+  @Exclude()
   @Column()
   password: string;
 
@@ -27,4 +32,12 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // * Relations
+
+  @OneToMany(() => Timer, (timer) => timer.timerOwner)
+  timers: Timer[];
+
+  @OneToMany(() => Project, (project) => project.projectOwner)
+  projects: Project[];
 }

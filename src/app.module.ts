@@ -9,6 +9,7 @@ import { TagsModule } from './tags/tags.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TimersModule } from './timers/timers.module';
 import { UserModule } from './user/user.module';
+import { ClientsModule } from './clients/clients.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserModule } from './user/user.module';
     ProjectsModule,
     TagsModule,
     TasksModule,
+    ClientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
