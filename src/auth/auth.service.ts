@@ -4,7 +4,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthHelper } from './auth.helper';
 import { AuthDto } from './dto/auth.dto';
-import { UpdateAuthDto } from './dto/login-auth.dto';
+import { LoginAuthDto } from './dto/login-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
     return { user, accessToken };
   }
 
-  async login(dto: UpdateAuthDto) {
+  async login(dto: LoginAuthDto) {
     const user: User = await this.userRepository.findOne({
       where: { email: dto.email },
     });
