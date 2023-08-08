@@ -1,26 +1,56 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/user/entities/user.entity';
+import { Repository } from 'typeorm';
+import { AuthHelper } from './auth.helper';
+import { AuthDto } from './dto/auth.dto';
+import { UpdateAuthDto } from './dto/login-auth.dto';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @Inject(AuthHelper) private readonly authHelper: AuthHelper,
+  ) {}
+
+  async register(dto: AuthDto) {
+    const candidate = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
+    if (candidate) {
+      throw new HttpException(
+        'A given email already exists',
+        HttpStatus.CONFLICT,
+      );
+    }
+    const user = await this.userRepository.save({
+      email: dto.email,
+      password: this.authHelper.encodePassword(dto.password),
+      username: dto.username,
+    });
+    const accessToken = this.authHelper.generateToken(user);
+
+    return { user, accessToken };
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async login(dto: UpdateAuthDto) {
+    const user: User = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (!user) {
+      throw new HttpException('No user found', HttpStatus.NOT_FOUND);
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    const isPasswordValid: boolean = this.authHelper.isPasswordValid(
+      dto.password,
+      user.password,
+    );
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    if (!isPasswordValid) {
+      throw new HttpException('Wrong password', HttpStatus.NOT_FOUND);
+    }
+
+    return { user, accessToken: this.authHelper.generateToken(user) };
   }
 }
