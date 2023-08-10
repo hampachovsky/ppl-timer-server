@@ -14,6 +14,9 @@ export class Tag {
   @Column()
   archived: boolean;
 
-  @ManyToMany(() => Timer, (timer) => timer.tags, { onDelete: 'CASCADE' })
+  @ManyToMany(() => Timer, (timer) => timer.tags, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   timers: Timer[];
 }

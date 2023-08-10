@@ -35,9 +35,11 @@ export class User {
 
   // * Relations
 
-  @OneToMany(() => Timer, (timer) => timer.timerOwner)
+  @OneToMany(() => Timer, (timer) => timer.timerOwner, { onUpdate: 'CASCADE' })
   timers: Timer[];
 
-  @OneToMany(() => Project, (project) => project.projectOwner)
+  @OneToMany(() => Project, (project) => project.projectOwner, {
+    onUpdate: 'CASCADE',
+  })
   projects: Project[];
 }

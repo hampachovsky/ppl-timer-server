@@ -24,6 +24,9 @@ export class Task {
   task: string;
 
   // * Relations
-  @ManyToOne(() => Project, (project) => project.tasks, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Project, (project) => project.tasks, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   project: Project;
 }

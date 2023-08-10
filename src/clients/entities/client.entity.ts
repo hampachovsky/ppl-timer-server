@@ -21,6 +21,7 @@ export class Client {
   // * Relations
   @OneToMany(() => Project, (project) => project.client, {
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   projects: Project[];
 }

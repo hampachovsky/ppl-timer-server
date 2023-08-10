@@ -48,12 +48,21 @@ export class Project {
   })
   timers: Timer[];
 
-  @OneToMany(() => Task, (task) => task.project, { onDelete: 'CASCADE' })
+  @OneToMany(() => Task, (task) => task.project, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   tasks: Task[];
 
-  @ManyToOne(() => User, (user) => user.projects, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.projects, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   projectOwner: User;
 
-  @ManyToOne(() => Client, (client) => client.projects, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Client, (client) => client.projects, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   client: Client;
 }

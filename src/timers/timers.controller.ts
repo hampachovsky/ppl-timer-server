@@ -1,15 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { TimersService } from './timers.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { CreateTimerDto } from './dto/create-timer.dto';
 import { UpdateTimerDto } from './dto/update-timer.dto';
+import { TimersService } from './timers.service';
 
 @Controller('timers')
 export class TimersController {
   constructor(private readonly timersService: TimersService) {}
 
   @Post()
-  create(@Body() createTimerDto: CreateTimerDto) {
-    return this.timersService.create(createTimerDto);
+  @UseGuards(JwtAuthGuard)
+  create(@Body() createTimerDto: CreateTimerDto, @Request() req) {
+    return this.timersService.create(createTimerDto, req.user);
   }
 
   @Get()

@@ -20,17 +20,20 @@ export class Timer {
   })
   id: number;
 
-  @Column({ nullable: false })
-  timerDate: Date;
+  @Column('simple-array', { nullable: false })
+  timerDates: Date[];
 
   @Column({ nullable: false })
-  timer: number;
+  timerSummary: number;
 
   @Column({ nullable: false, default: '' })
   timerName: string;
 
   @Column({ nullable: true, default: '' })
   timerDescription: string;
+
+  @Column({ default: false })
+  isRunning: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -40,17 +43,24 @@ export class Timer {
 
   // * Relations
 
-  @ManyToOne(() => User, (user) => user.timers, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.timers, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'userId' })
   timerOwner: User;
 
   @ManyToOne(() => Project, (project) => project.timers, {
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'projectId' })
   assignedProject: Project;
 
-  @ManyToMany(() => Tag, (tag) => tag.timers, { onDelete: 'CASCADE' })
+  @ManyToMany(() => Tag, (tag) => tag.timers, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable()
   tags: Tag[];
 }
