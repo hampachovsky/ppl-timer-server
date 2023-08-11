@@ -24,22 +24,31 @@ export class TimersController {
     return this.timersService.create(createTimerDto, req.user);
   }
 
-  @Get()
+  @Get('/')
   findAll() {
     return this.timersService.findAll();
   }
 
+  @Get('/byUser')
+  @UseGuards(JwtAuthGuard)
+  findAllByUserId(@Request() req) {
+    return this.timersService.findAllByUserId(req.user);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.timersService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.timersService.findOne(+id, req.user);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateTimerDto: UpdateTimerDto) {
     return this.timersService.update(+id, updateTimerDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.timersService.remove(+id);
   }

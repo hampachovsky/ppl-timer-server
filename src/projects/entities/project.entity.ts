@@ -32,6 +32,12 @@ export class Project {
   @Column({ default: false })
   archived: boolean;
 
+  @Column({ default: false })
+  billable: boolean;
+
+  @Column({ default: '' })
+  color: string;
+
   @Column({ default: 0 })
   hourlyRate: number;
 

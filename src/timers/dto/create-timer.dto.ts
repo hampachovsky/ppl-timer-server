@@ -1,21 +1,22 @@
 import {
   IsBoolean,
-  IsDateString,
   IsNotEmpty,
-  IsNumber,
+  IsObject,
   IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreateTimerDto {
-  @IsDateString()
+  @IsObject()
   @IsNotEmpty()
-  timerDates: Date;
-
-  @IsNumber()
-  timerSummary: number;
+  timerInterval: {
+    start: Date;
+    end: Date;
+    duration: number;
+  };
 
   @IsBoolean()
+  @IsOptional()
   isRunning: boolean;
 
   @IsNotEmpty()

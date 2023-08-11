@@ -20,11 +20,12 @@ export class Timer {
   })
   id: number;
 
-  @Column('simple-array', { nullable: false })
-  timerDates: Date[];
-
-  @Column({ nullable: false })
-  timerSummary: number;
+  @Column('simple-json')
+  timerInterval: {
+    start: Date | null;
+    end: Date | null;
+    duration: number | null;
+  };
 
   @Column({ nullable: false, default: '' })
   timerName: string;
