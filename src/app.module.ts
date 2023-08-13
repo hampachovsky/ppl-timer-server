@@ -10,6 +10,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { TimersModule } from './timers/timers.module';
 import { UserModule } from './user/user.module';
 import { ClientsModule } from './clients/clients.module';
+import { TimerIntervalsModule } from './timer-intervals/timer-intervals.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ClientsModule } from './clients/clients.module';
     TagsModule,
     TasksModule,
     ClientsModule,
+    TimerIntervalsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

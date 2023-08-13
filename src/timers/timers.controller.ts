@@ -37,8 +37,8 @@ export class TimersController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string, @Request() req) {
-    return this.timersService.findOne(+id, req.user);
+  findOne(@Param('id') id: string) {
+    return this.timersService.findOne(+id);
   }
 
   @Patch(':id')

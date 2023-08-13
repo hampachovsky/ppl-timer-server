@@ -1,5 +1,6 @@
 import { Project } from 'src/projects/entities/project.entity';
 import { Tag } from 'src/tags/entities/tag.entity';
+import { TimerInterval } from 'src/timer-intervals/entities/timer-interval.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -9,6 +10,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,18 +22,14 @@ export class Timer {
   })
   id: number;
 
-  @Column('simple-json')
-  timerInterval: {
-    start: Date | null;
-    end: Date | null;
-    duration: number | null;
-  };
-
   @Column({ nullable: false, default: '' })
   timerName: string;
 
   @Column({ nullable: true, default: '' })
   timerDescription: string;
+
+  @Column({ default: 0, nullable: false })
+  timerSummary: number;
 
   @Column({ default: false })
   isRunning: boolean;
@@ -64,4 +62,10 @@ export class Timer {
   })
   @JoinTable()
   tags: Tag[];
+
+  @OneToMany(() => TimerInterval, (timerInterval) => timerInterval.timer, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  timerIntervals: TimerInterval[];
 }

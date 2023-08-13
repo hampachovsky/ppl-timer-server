@@ -30,7 +30,6 @@ export class TimersService {
     }
     const newTimer = await this.timerRepository.create({
       timerName: createTimerDto.timerName,
-      timerInterval: createTimerDto.timerInterval,
       isRunning: createTimerDto.isRunning,
       timerDescription: createTimerDto.timerDescription,
       timerOwner: user,
@@ -55,13 +54,11 @@ export class TimersService {
     return timers;
   }
 
-  async findOne(id: number, user: User) {
-    const timer = await this.timerRepository
-      .createQueryBuilder('timer')
-      .leftJoinAndSelect('timer.timerOwner', 'user')
-      .where('user.id = :userId', { userId: user.id })
-      .andWhere('timer.id = :timerId', { timerId: id })
-      .getOne();
+  async findOne(id: number) {
+    const timer = await this.timerRepository.findOne({
+      where: { id },
+      relations: { timerOwner: true, timerIntervals: true },
+    });
     if (!timer)
       throw new HttpException('Timer not found', HttpStatus.NOT_FOUND);
     return timer;
