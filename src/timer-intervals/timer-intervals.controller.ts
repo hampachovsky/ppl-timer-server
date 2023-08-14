@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { CreateTimerIntervalDto } from './dto/create-timer-interval.dto';
 import { UpdateTimerIntervalDto } from './dto/update-timer-interval.dto';
 import { TimerIntervalsService } from './timer-intervals.service';
@@ -28,6 +30,12 @@ export class TimerIntervalsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.timerIntervalsService.findOne(+id);
+  }
+
+  @Get('/byTimer/:id')
+  @UseGuards(JwtAuthGuard)
+  findAllByUserId(@Param('id') id: string) {
+    return this.timerIntervalsService.findAllByTimerId(+id);
   }
 
   @Patch(':id')

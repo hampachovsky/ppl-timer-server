@@ -6,7 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { TagsService } from './tags.service';
@@ -16,8 +19,21 @@ export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   @Post()
-  create(@Body() createTagDto: CreateTagDto) {
-    return this.tagsService.create(createTagDto);
+  @UseGuards(JwtAuthGuard)
+  create(@Body() createTagDto: CreateTagDto, @Req() req) {
+    return this.tagsService.create(createTagDto, req.user);
+  }
+
+  @Get('/byUser')
+  @UseGuards(JwtAuthGuard)
+  findAllByUserId(@Req() req) {
+    return this.tagsService.findAllByUserId(req.user);
+  }
+
+  @Get('/byTimer/:id')
+  @UseGuards(JwtAuthGuard)
+  findAllByTimerId(@Param('id') id: string) {
+    return this.tagsService.findAllByTimerId(+id);
   }
 
   @Get()

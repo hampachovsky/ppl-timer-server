@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Tag } from 'src/tags/entities/tag.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateTimerDto } from './dto/create-timer.dto';
+import { UpdateTagsForTimerDto } from './dto/timer.dto';
 import { UpdateTimerDto } from './dto/update-timer.dto';
 import { Timer } from './entities/timer.entity';
 
@@ -13,6 +15,8 @@ export class TimersService {
     private readonly timerRepository: Repository<Timer>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Tag)
+    private readonly tagRepository: Repository<Tag>,
   ) {}
 
   async create(createTimerDto: CreateTimerDto, user: User) {
@@ -34,8 +38,7 @@ export class TimersService {
       timerDescription: createTimerDto.timerDescription,
       timerOwner: user,
     });
-    const createdTimer = await this.timerRepository.save(newTimer);
-    return createdTimer;
+    return await this.timerRepository.save(newTimer);
   }
 
   async findAll() {
@@ -55,28 +58,39 @@ export class TimersService {
   }
 
   async findOne(id: number) {
-    const timer = await this.timerRepository.findOne({
-      where: { id },
-      relations: { timerOwner: true, timerIntervals: true },
-    });
-    if (!timer)
-      throw new HttpException('Timer not found', HttpStatus.NOT_FOUND);
-    return timer;
+    return await this.isTimerExist(id);
   }
 
   async update(id: number, updateTimerDto: UpdateTimerDto) {
-    const timer = await this.timerRepository.findOne({ where: { id } });
-
-    if (!timer)
-      throw new HttpException('Timer not found', HttpStatus.NOT_FOUND);
+    await this.isTimerExist(id);
     return await this.timerRepository.update(id, updateTimerDto);
   }
 
+  async updateTagsForTimer(
+    id: number,
+    updateTagsForTimer: UpdateTagsForTimerDto,
+  ) {
+    const timer = await this.isTimerExist(id);
+    const tagsToUpdateTimer = await this.tagRepository.find({
+      where: { id: In(updateTagsForTimer.tagIds) },
+    });
+    timer.tags = tagsToUpdateTimer;
+    return await this.timerRepository.save(timer);
+  }
+
   async remove(id: number) {
-    const timer = await this.timerRepository.findOne({ where: { id } });
+    await this.isTimerExist(id);
+    return this.timerRepository.delete(id);
+  }
+
+  async isTimerExist(id: number) {
+    const timer = await this.timerRepository.findOne({
+      where: { id },
+      relations: { timerOwner: true, timerIntervals: true, tags: true },
+    });
 
     if (!timer)
       throw new HttpException('Timer not found', HttpStatus.NOT_FOUND);
-    return this.timerRepository.delete(id);
+    return timer;
   }
 }

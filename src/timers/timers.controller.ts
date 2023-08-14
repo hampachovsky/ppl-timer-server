@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { CreateTimerDto } from './dto/create-timer.dto';
+import { UpdateTagsForTimerDto } from './dto/timer.dto';
 import { UpdateTimerDto } from './dto/update-timer.dto';
 import { TimersService } from './timers.service';
 
@@ -36,7 +37,6 @@ export class TimersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
     return this.timersService.findOne(+id);
   }
@@ -45,6 +45,15 @@ export class TimersController {
   @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateTimerDto: UpdateTimerDto) {
     return this.timersService.update(+id, updateTimerDto);
+  }
+
+  @Patch('/updateTagsForTimer/:id')
+  @UseGuards(JwtAuthGuard)
+  updateTagsForTimer(
+    @Param('id') id: string,
+    @Body() updateTagsForTimer: UpdateTagsForTimerDto,
+  ) {
+    return this.timersService.updateTagsForTimer(+id, updateTagsForTimer);
   }
 
   @Delete(':id')

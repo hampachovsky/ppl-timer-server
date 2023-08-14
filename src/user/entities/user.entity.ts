@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Project } from 'src/projects/entities/project.entity';
+import { Tag } from 'src/tags/entities/tag.entity';
 import { Timer } from 'src/timers/entities/timer.entity';
 import {
   Column,
@@ -37,6 +38,9 @@ export class User {
 
   @OneToMany(() => Timer, (timer) => timer.timerOwner, { onUpdate: 'CASCADE' })
   timers: Timer[];
+
+  @OneToMany(() => Tag, (tag) => tag.user, { onUpdate: 'CASCADE' })
+  tags: Tag[];
 
   @OneToMany(() => Project, (project) => project.projectOwner, {
     onUpdate: 'CASCADE',

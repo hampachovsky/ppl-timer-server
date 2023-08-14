@@ -21,7 +21,7 @@ export class TimerInterval {
   @Column({ nullable: true, default: null })
   intervalEnd: Date | null;
 
-  @Column({ nullable: true, default: null })
+  @Column({ nullable: true, default: null, type: 'bigint' })
   intervalDuration: number | null;
 
   @UpdateDateColumn()

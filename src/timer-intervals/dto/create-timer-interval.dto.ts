@@ -7,15 +7,15 @@ import {
 
 export class CreateTimerIntervalDto {
   @IsDateString()
-  start: Date | null;
+  intervalStart: Date | null;
 
   @IsDateString()
   @IsOptional()
-  end: Date | null;
+  intervalEnd: Date | null;
 
   @IsNumber()
   @IsOptional()
-  duration: number | null;
+  intervalDuration: number | null;
 
   @IsNumber()
   @IsNotEmpty()

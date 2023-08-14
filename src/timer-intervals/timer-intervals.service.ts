@@ -24,7 +24,7 @@ export class TimerIntervalsService {
     if (!timer)
       throw new HttpException('Timer not found', HttpStatus.NOT_FOUND);
     const newInterval = this.timerIntervalRepository.create({
-      intervalStart: createTimerIntervalDto.start,
+      intervalStart: createTimerIntervalDto.intervalStart,
       timer,
     });
     const createdInterval = await this.timerIntervalRepository.save(
@@ -34,18 +34,44 @@ export class TimerIntervalsService {
   }
 
   async findAll() {
-    return `This action returns all timerIntervals`;
+    return this.timerIntervalRepository.find({ relations: { timer: true } });
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} timerInterval`;
+    return await this.isIntervalExist(id);
+  }
+
+  async findAllByTimerId(id: number) {
+    const interval = await this.timerIntervalRepository.findOne({
+      where: { timer: { id } },
+      relations: { timer: true },
+    });
+    if (!interval)
+      throw new HttpException('Interval not found', HttpStatus.NOT_FOUND);
+    return interval;
   }
 
   async update(id: number, updateTimerIntervalDto: UpdateTimerIntervalDto) {
-    return `This action updates a #${id} timerInterval`;
+    await this.isIntervalExist(id);
+    return await this.timerIntervalRepository.update(
+      id,
+      updateTimerIntervalDto,
+    );
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} timerInterval`;
+    await this.isIntervalExist(id);
+    return this.timerIntervalRepository.delete(id);
+  }
+
+  async isIntervalExist(id: number) {
+    const interval = await this.timerIntervalRepository.findOne({
+      where: { id },
+      relations: { timer: true },
+    });
+
+    if (!interval)
+      throw new HttpException('Interval not found', HttpStatus.NOT_FOUND);
+    return interval;
   }
 }

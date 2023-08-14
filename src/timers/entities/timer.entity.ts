@@ -28,7 +28,7 @@ export class Timer {
   @Column({ nullable: true, default: '' })
   timerDescription: string;
 
-  @Column({ default: 0, nullable: false })
+  @Column({ default: 0, nullable: false, type: 'bigint' })
   timerSummary: number;
 
   @Column({ default: false })

@@ -20,6 +20,7 @@ export class UserService {
     const users = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.timers', 'timers')
+      .leftJoinAndSelect('user.tags', 'tags')
       .getMany();
     if (users.length <= 0)
       throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
