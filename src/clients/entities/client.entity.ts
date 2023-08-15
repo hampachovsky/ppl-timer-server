@@ -1,27 +1,43 @@
 import { Project } from 'src/projects/entities/project.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Client {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'client_id' })
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   clientName: string;
 
-  @Column()
+  @Column({ nullable: false })
   clientEmail: string;
 
-  @Column()
+  @Column({ default: '' })
   clientNote: string;
 
-  @Column()
+  @Column({ default: false })
   archived: boolean;
 
   // * Relations
+  @ManyToOne(() => User, (user) => user.clients, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
   @OneToMany(() => Project, (project) => project.client, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
+  @JoinColumn({ name: 'projectId' })
   projects: Project[];
 }

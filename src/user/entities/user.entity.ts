@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Client } from 'src/clients/entities/client.entity';
 import { Project } from 'src/projects/entities/project.entity';
 import { Tag } from 'src/tags/entities/tag.entity';
 import { Timer } from 'src/timers/entities/timer.entity';
@@ -46,4 +47,9 @@ export class User {
     onUpdate: 'CASCADE',
   })
   projects: Project[];
+
+  @OneToMany(() => Client, (client) => client.user, {
+    onUpdate: 'CASCADE',
+  })
+  clients: Client[];
 }

@@ -6,7 +6,7 @@ import {
   Param,
   Patch,
   Post,
-  Request,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/auth.guard';
@@ -21,7 +21,7 @@ export class TimersController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createTimerDto: CreateTimerDto, @Request() req) {
+  create(@Body() createTimerDto: CreateTimerDto, @Req() req) {
     return this.timersService.create(createTimerDto, req.user);
   }
 
@@ -32,11 +32,12 @@ export class TimersController {
 
   @Get('/byUser')
   @UseGuards(JwtAuthGuard)
-  findAllByUserId(@Request() req) {
+  findAllByUserId(@Req() req) {
     return this.timersService.findAllByUserId(req.user);
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
     return this.timersService.findOne(+id);
   }

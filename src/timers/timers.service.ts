@@ -32,7 +32,7 @@ export class TimersService {
         HttpStatus.CONFLICT,
       );
     }
-    const newTimer = await this.timerRepository.create({
+    const newTimer = this.timerRepository.create({
       timerName: createTimerDto.timerName,
       isRunning: createTimerDto.isRunning,
       timerDescription: createTimerDto.timerDescription,

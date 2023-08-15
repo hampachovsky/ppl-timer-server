@@ -21,6 +21,7 @@ export class UserService {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.timers', 'timers')
       .leftJoinAndSelect('user.tags', 'tags')
+      .leftJoinAndSelect('user.clients', 'clients')
       .getMany();
     if (users.length <= 0)
       throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
