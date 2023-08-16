@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Project } from 'src/projects/entities/project.entity';
 import { Tag } from 'src/tags/entities/tag.entity';
 import { TimerInterval } from 'src/timer-intervals/entities/timer-interval.entity';
 import { User } from 'src/user/entities/user.entity';
@@ -8,7 +9,9 @@ import { TimersController } from './timers.controller';
 import { TimersService } from './timers.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Timer, User, TimerInterval, Tag])],
+  imports: [
+    TypeOrmModule.forFeature([Timer, User, TimerInterval, Tag, Project]),
+  ],
   controllers: [TimersController],
   providers: [TimersService],
 })

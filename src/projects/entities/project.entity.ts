@@ -38,7 +38,7 @@ export class Project {
   @Column({ default: '' })
   color: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, nullable: true })
   hourlyRate: number;
 
   @CreateDateColumn()

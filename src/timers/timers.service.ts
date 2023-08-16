@@ -1,10 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Project } from 'src/projects/entities/project.entity';
 import { Tag } from 'src/tags/entities/tag.entity';
 import { User } from 'src/user/entities/user.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateTimerDto } from './dto/create-timer.dto';
-import { UpdateTagsForTimerDto } from './dto/timer.dto';
+import {
+  AssignProjectToTimerDto,
+  UpdateTagsForTimerDto,
+} from './dto/timer.dto';
 import { UpdateTimerDto } from './dto/update-timer.dto';
 import { Timer } from './entities/timer.entity';
 
@@ -17,6 +21,8 @@ export class TimersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
+    @InjectRepository(Project)
+    private readonly projectRepository: Repository<Project>,
   ) {}
 
   async create(createTimerDto: CreateTimerDto, user: User) {
@@ -66,14 +72,41 @@ export class TimersService {
     return await this.timerRepository.update(id, updateTimerDto);
   }
 
-  async updateTagsForTimer(
+  async assignProjectToTimer(
     id: number,
-    updateTagsForTimer: UpdateTagsForTimerDto,
+    assignProjectToTimerDto: AssignProjectToTimerDto,
+    user: User,
   ) {
     const timer = await this.isTimerExist(id);
-    const tagsToUpdateTimer = await this.tagRepository.find({
-      where: { id: In(updateTagsForTimer.tagIds) },
-    });
+    const projectToAssignTimer = await this.projectRepository
+      .createQueryBuilder('project')
+      .leftJoin('project.projectOwner', 'user')
+      .where('project.id =:projectId', {
+        projectId: assignProjectToTimerDto.projectId,
+      })
+      .andWhere('user.id =:userId', { userId: user.id })
+      .getOne();
+    timer.assignedProject = projectToAssignTimer;
+    return await this.timerRepository.save(timer);
+  }
+
+  async updateTagsForTimer(
+    id: number,
+    updateTagsForTimerDto: UpdateTagsForTimerDto,
+    user: User,
+  ) {
+    const timer = await this.isTimerExist(id);
+    const tagsToUpdateTimer = await this.tagRepository
+      .createQueryBuilder('tag')
+      .leftJoin('tag.user', 'user')
+      .where('tag.id IN (:...tagIds)', {
+        tagIds: updateTagsForTimerDto.tagIds,
+      })
+      .andWhere('user.id =:userId', { userId: user.id })
+      .getMany();
+    /*     const tagsToUpdateTimer = await this.tagRepository.find({
+      where: { id: In(updateTagsForTimer.tagIds), user: { id: user.id } },
+    }); */
     timer.tags = tagsToUpdateTimer;
     return await this.timerRepository.save(timer);
   }
