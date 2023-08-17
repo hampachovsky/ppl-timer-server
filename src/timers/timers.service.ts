@@ -63,12 +63,12 @@ export class TimersService {
     return timers;
   }
 
-  async findOne(id: number) {
-    return await this.isTimerExist(id);
+  async findOne(id: number, user: User) {
+    return await this.isTimerExist(id, user.id);
   }
 
-  async update(id: number, updateTimerDto: UpdateTimerDto) {
-    await this.isTimerExist(id);
+  async update(id: number, updateTimerDto: UpdateTimerDto, user: User) {
+    await this.isTimerExist(id, user.id);
     return await this.timerRepository.update(id, updateTimerDto);
   }
 
@@ -77,7 +77,7 @@ export class TimersService {
     assignProjectToTimerDto: AssignProjectToTimerDto,
     user: User,
   ) {
-    const timer = await this.isTimerExist(id);
+    const timer = await this.isTimerExist(id, user.id);
     const projectToAssignTimer = await this.projectRepository
       .createQueryBuilder('project')
       .leftJoin('project.projectOwner', 'user')
@@ -95,7 +95,7 @@ export class TimersService {
     updateTagsForTimerDto: UpdateTagsForTimerDto,
     user: User,
   ) {
-    const timer = await this.isTimerExist(id);
+    const timer = await this.isTimerExist(id, user.id);
     const tagsToUpdateTimer = await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoin('tag.user', 'user')
@@ -111,14 +111,14 @@ export class TimersService {
     return await this.timerRepository.save(timer);
   }
 
-  async remove(id: number) {
-    await this.isTimerExist(id);
+  async remove(id: number, user: User) {
+    await this.isTimerExist(id, user.id);
     return this.timerRepository.delete(id);
   }
 
-  async isTimerExist(id: number) {
+  async isTimerExist(id: number, userId: number) {
     const timer = await this.timerRepository.findOne({
-      where: { id },
+      where: { id, timerOwner: { id: userId } },
       relations: { timerOwner: true, timerIntervals: true, tags: true },
     });
 

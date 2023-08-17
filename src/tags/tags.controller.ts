@@ -32,8 +32,8 @@ export class TagsController {
 
   @Get('/byTimer/:id')
   @UseGuards(JwtAuthGuard)
-  findAllByTimerId(@Param('id') id: string) {
-    return this.tagsService.findAllByTimerId(+id);
+  findAllByTimerId(@Param('id') id: string, @Req() req) {
+    return this.tagsService.findAllByTimerId(+id, req.user);
   }
 
   @Get()
@@ -42,17 +42,24 @@ export class TagsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tagsService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('id') id: string, @Req() req) {
+    return this.tagsService.findOne(+id, req.user);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
-    return this.tagsService.update(+id, updateTagDto);
+  @UseGuards(JwtAuthGuard)
+  update(
+    @Param('id') id: string,
+    @Body() updateTagDto: UpdateTagDto,
+    @Req() req,
+  ) {
+    return this.tagsService.update(+id, updateTagDto, req.user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tagsService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  remove(@Param('id') id: string, @Req() req) {
+    return this.tagsService.remove(+id, req.user);
   }
 }

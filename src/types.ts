@@ -1,5 +1,6 @@
 export enum TaskType {
-  MINOR = 'minor',
+  LOW = 'low',
   NORMAL = 'normal',
-  IMPORTANT = 'important',
+  MODERATE = 'moderate',
+  HIGH = 'high',
 }

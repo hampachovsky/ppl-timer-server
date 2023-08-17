@@ -42,8 +42,8 @@ export class TagsService {
     return this.tagRepository.find();
   }
 
-  async findOne(id: number) {
-    return await this.isTagExist(id);
+  async findOne(id: number, user: User) {
+    return await this.isTagExist(id, user.id);
   }
 
   async findAllByUserId(user: User) {
@@ -58,7 +58,7 @@ export class TagsService {
     return tags;
   }
 
-  async findAllByTimerId(id: number) {
+  async findAllByTimerId(id: number, user: User) {
     const tags = await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoinAndSelect('tag.timers', 'timers')
@@ -70,19 +70,19 @@ export class TagsService {
     return tags;
   }
 
-  async update(id: number, updateTagDto: UpdateTagDto) {
-    await this.isTagExist(id);
+  async update(id: number, updateTagDto: UpdateTagDto, user: User) {
+    await this.isTagExist(id, user.id);
     return await this.tagRepository.update(id, updateTagDto);
   }
 
-  async remove(id: number) {
-    await this.isTagExist(id);
+  async remove(id: number, user: User) {
+    await this.isTagExist(id, user.id);
     return this.tagRepository.delete(id);
   }
 
-  async isTagExist(id: number) {
+  async isTagExist(id: number, userId: number) {
     const tag = await this.tagRepository.findOne({
-      where: { id },
+      where: { id, user: { id: userId } },
       relations: { timers: true, user: true },
     });
 

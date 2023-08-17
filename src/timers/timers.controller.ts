@@ -41,14 +41,18 @@ export class TimersController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.timersService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req) {
+    return this.timersService.findOne(+id, req.user);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateTimerDto: UpdateTimerDto) {
-    return this.timersService.update(+id, updateTimerDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateTimerDto: UpdateTimerDto,
+    @Req() req,
+  ) {
+    return this.timersService.update(+id, updateTimerDto, req.user);
   }
 
   @Patch('/assignProjectToTimer/:id')
@@ -81,7 +85,7 @@ export class TimersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.timersService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    return this.timersService.remove(+id, req.user);
   }
 }

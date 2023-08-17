@@ -69,19 +69,19 @@ export class ClientsService {
     return client;
   }
 
-  async update(id: number, updateClientDto: UpdateClientDto) {
-    await this.isClientExist(id);
+  async update(id: number, updateClientDto: UpdateClientDto, user: User) {
+    await this.isClientExist(id, user.id);
     return await this.clientRepository.update(id, updateClientDto);
   }
 
-  async remove(id: number) {
-    await this.isClientExist(id);
+  async remove(id: number, user: User) {
+    await this.isClientExist(id, user.id);
     return this.clientRepository.delete(id);
   }
 
-  async isClientExist(id: number) {
+  async isClientExist(id: number, userId: number) {
     const client = await this.clientRepository.findOne({
-      where: { id },
+      where: { id, user: { id: userId } },
       relations: { user: true, projects: true },
     });
 

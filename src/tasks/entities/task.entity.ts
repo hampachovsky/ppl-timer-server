@@ -7,11 +7,8 @@ export class Task {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'task_id' })
   id: number;
 
-  @Column()
+  @Column({ default: false })
   completed: boolean;
-
-  @Column()
-  active: boolean;
 
   @Column({
     type: 'enum',

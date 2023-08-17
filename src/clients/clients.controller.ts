@@ -43,13 +43,17 @@ export class ClientsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-    return this.clientsService.update(+id, updateClientDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateClientDto: UpdateClientDto,
+    @Req() req,
+  ) {
+    return this.clientsService.update(+id, updateClientDto, req.user);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.clientsService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    return this.clientsService.remove(+id, req.user);
   }
 }
