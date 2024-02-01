@@ -28,8 +28,11 @@ export class UserService {
     return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(user: User) {
+    const foundUser = this.userRepository.findOneBy({ id: user.id });
+    if (!foundUser)
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return foundUser;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

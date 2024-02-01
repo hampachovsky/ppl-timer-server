@@ -28,9 +28,9 @@ export class AuthService {
       password: this.authHelper.encodePassword(dto.password),
       username: dto.username,
     });
-    const accessToken = this.authHelper.generateToken(user);
+    const token = this.authHelper.generateToken(user);
 
-    return { user, accessToken };
+    return { user, token };
   }
 
   async login(dto: LoginAuthDto) {
@@ -51,6 +51,6 @@ export class AuthService {
       throw new HttpException('Wrong password', HttpStatus.NOT_FOUND);
     }
 
-    return { user, accessToken: this.authHelper.generateToken(user) };
+    return { user, token: this.authHelper.generateToken(user) };
   }
 }
