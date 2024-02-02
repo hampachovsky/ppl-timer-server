@@ -28,9 +28,12 @@ export class AuthService {
       password: this.authHelper.encodePassword(dto.password),
       username: dto.username,
     });
+    const userToReturn = await this.userRepository.findOne({
+      where: { email: user.email },
+    });
     const token = this.authHelper.generateToken(user);
 
-    return { user, token };
+    return { user: userToReturn, token };
   }
 
   async login(dto: LoginAuthDto) {
