@@ -46,15 +46,18 @@ export class TagsService {
     return await this.isTagExist(id, user.id);
   }
 
-  async findAllByUserId(user: User) {
+  async findAllByUserId(user: User, query: { type: string; qs: string }) {
     const tags = await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoinAndSelect('tag.user', 'user')
       .where('user.id = :userId', { userId: user.id })
+      .andWhere('tag.tagName like :qs', { qs: `%${query.qs || ''}%` })
       .getMany();
-
     if (tags.length <= 0)
       throw new HttpException('Tags not found', HttpStatus.NOT_FOUND);
+    if (query.type === 'active')
+      return tags.filter((tag) => tag.archived === false);
+    if (query.type === 'archived') return tags.filter((tag) => tag.archived);
     return tags;
   }
 

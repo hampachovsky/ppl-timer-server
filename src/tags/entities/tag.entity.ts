@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Timer } from 'src/timers/entities/timer.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -23,11 +24,12 @@ export class Tag {
   @Column({ default: false })
   archived: boolean;
 
+  @Exclude()
   @CreateDateColumn()
   createdAt: Date;
 
   // * Relations
-
+  @Exclude()
   @ManyToOne(() => User, (user) => user.tags, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

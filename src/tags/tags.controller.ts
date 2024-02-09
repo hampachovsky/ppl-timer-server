@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -26,8 +27,8 @@ export class TagsController {
 
   @Get('/byUser')
   @UseGuards(JwtAuthGuard)
-  findAllByUserId(@Req() req) {
-    return this.tagsService.findAllByUserId(req.user);
+  findAllByUserId(@Req() req, @Query() query: { type: string; qs: string }) {
+    return this.tagsService.findAllByUserId(req.user, query);
   }
 
   @Get('/byTimer/:id')
