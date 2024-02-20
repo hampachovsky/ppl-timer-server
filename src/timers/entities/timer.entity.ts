@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Project } from 'src/projects/entities/project.entity';
 import { Tag } from 'src/tags/entities/tag.entity';
 import { TimerInterval } from 'src/timer-intervals/entities/timer-interval.entity';
@@ -41,7 +42,7 @@ export class Timer {
   updatedAt: Date;
 
   // * Relations
-
+  @Exclude()
   @ManyToOne(() => User, (user) => user.timers, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
