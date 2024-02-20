@@ -55,6 +55,7 @@ export class TimersService {
     const timers = await this.timerRepository
       .createQueryBuilder('timer')
       .leftJoinAndSelect('timer.timerOwner', 'user')
+      .leftJoinAndSelect('timer.timerIntervals', 'timerIntervals')
       .where('user.id = :userId', { userId: user.id })
       .getMany();
 

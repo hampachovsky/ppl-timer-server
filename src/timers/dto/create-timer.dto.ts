@@ -1,4 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateTimerDto {
   @IsBoolean()
@@ -12,4 +18,8 @@ export class CreateTimerDto {
   @IsString()
   @IsOptional()
   timerDescription: string;
+
+  @IsNumber()
+  @IsOptional()
+  timerSummary: number;
 }
