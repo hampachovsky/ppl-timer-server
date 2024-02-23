@@ -9,5 +9,6 @@ import { TimerIntervalsService } from './timer-intervals.service';
   imports: [TypeOrmModule.forFeature([Timer, TimerInterval])],
   controllers: [TimerIntervalsController],
   providers: [TimerIntervalsService],
+  exports: [TimerIntervalsService],
 })
 export class TimerIntervalsModule {}

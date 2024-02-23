@@ -2,11 +2,15 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from 'src/projects/entities/project.entity';
 import { Tag } from 'src/tags/entities/tag.entity';
+import { TimerInterval } from 'src/timer-intervals/entities/timer-interval.entity';
+import { TimerIntervalsService } from 'src/timer-intervals/timer-intervals.service';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateTimerDto } from './dto/create-timer.dto';
 import {
   AssignProjectToTimerDto,
+  StartTimerDto,
+  StopTimerDto,
   UpdateTagsForTimerDto,
 } from './dto/timer.dto';
 import { UpdateTimerDto } from './dto/update-timer.dto';
@@ -19,10 +23,13 @@ export class TimersService {
     private readonly timerRepository: Repository<Timer>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(TimerInterval)
+    private readonly timerIntervalRepository: Repository<TimerInterval>,
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
+    private timerIntervalsService: TimerIntervalsService,
   ) {}
 
   async create(createTimerDto: CreateTimerDto, user: User) {
@@ -91,6 +98,41 @@ export class TimersService {
     return await this.timerRepository.save(timer);
   }
 
+  async stopTimer(id: number, stopTimerDto: StopTimerDto, user: User) {
+    const timer = await this.isTimerExist(id, user.id);
+    const intervalToStop = await this.timerIntervalRepository
+      .createQueryBuilder('interval')
+      .leftJoin('interval.timer', 'timer')
+      .where('timer.id =:id', {
+        id,
+      })
+      .andWhere('interval.id =:intervalId', {
+        intervalId: stopTimerDto.intervalId,
+      })
+      .getOne();
+    intervalToStop.intervalEnd = stopTimerDto.intervalEnd;
+    intervalToStop.intervalDuration = stopTimerDto.intervalDuration;
+    await this.timerIntervalRepository.save(intervalToStop);
+    timer.timerSummary = +timer.timerSummary + +stopTimerDto.intervalDuration;
+    timer.isRunning = false;
+    return await this.timerRepository.save(timer);
+  }
+
+  async startTimer(id: number, startTimerDto: StartTimerDto, user: User) {
+    const timer = await this.isTimerExist(id, user.id, false);
+
+    await this.timerIntervalsService.create({
+      timerId: id,
+      intervalStart: startTimerDto.intervalStart,
+      intervalEnd: null,
+      intervalDuration: null,
+    });
+
+    timer.isRunning = true;
+
+    return await this.timerRepository.save(timer);
+  }
+
   async updateTagsForTimer(
     id: number,
     updateTagsForTimerDto: UpdateTagsForTimerDto,
@@ -117,10 +159,14 @@ export class TimersService {
     return this.timerRepository.delete(id);
   }
 
-  async isTimerExist(id: number, userId: number) {
+  async isTimerExist(id: number, userId: number, needRelations = true) {
     const timer = await this.timerRepository.findOne({
       where: { id, timerOwner: { id: userId } },
-      relations: { timerOwner: true, timerIntervals: true, tags: true },
+      relations: {
+        timerOwner: needRelations,
+        timerIntervals: needRelations,
+        tags: needRelations,
+      },
     });
 
     if (!timer)

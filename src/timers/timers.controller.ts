@@ -13,6 +13,8 @@ import { JwtAuthGuard } from 'src/auth/auth.guard';
 import { CreateTimerDto } from './dto/create-timer.dto';
 import {
   AssignProjectToTimerDto,
+  StartTimerDto,
+  StopTimerDto,
   UpdateTagsForTimerDto,
 } from './dto/timer.dto';
 import { UpdateTimerDto } from './dto/update-timer.dto';
@@ -67,6 +69,26 @@ export class TimersController {
       assignProjectToTimerDto,
       req.user,
     );
+  }
+
+  @Patch('/stopTimer/:id')
+  @UseGuards(JwtAuthGuard)
+  stopTimer(
+    @Param('id') id: string,
+    @Body() stopTimerDto: StopTimerDto,
+    @Req() req,
+  ) {
+    return this.timersService.stopTimer(+id, stopTimerDto, req.user);
+  }
+
+  @Patch('/startTimer/:id')
+  @UseGuards(JwtAuthGuard)
+  startTimer(
+    @Param('id') id: string,
+    @Body() startTimerDto: StartTimerDto,
+    @Req() req,
+  ) {
+    return this.timersService.startTimer(+id, startTimerDto, req.user);
   }
 
   @Patch('/updateTagsForTimer/:id')
