@@ -60,7 +60,10 @@ export class TimerIntervalsService {
   }
 
   async remove(id: number) {
-    await this.isIntervalExist(id);
+    const interval = await this.isIntervalExist(id);
+    const timer = interval.timer;
+    timer.timerSummary -= interval.intervalDuration;
+    await this.timerRepository.save(timer);
     return this.timerIntervalRepository.delete(id);
   }
 
