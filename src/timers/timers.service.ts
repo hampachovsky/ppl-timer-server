@@ -51,7 +51,10 @@ export class TimersService {
       timerDescription: createTimerDto.timerDescription,
       timerOwner: user,
     });
-    return await this.timerRepository.save(newTimer);
+
+    const savedTimer = await this.timerRepository.save(newTimer);
+    await this.startTimer(savedTimer.id, { intervalStart: new Date() }, user);
+    return savedTimer;
   }
 
   async findAll() {
