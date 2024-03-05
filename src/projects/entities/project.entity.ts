@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Client } from 'src/clients/entities/client.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import { Timer } from 'src/timers/entities/timer.entity';
@@ -44,6 +45,7 @@ export class Project {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn()
   updatedAt: Date;
 
@@ -60,6 +62,7 @@ export class Project {
   })
   tasks: Task[];
 
+  @Exclude()
   @ManyToOne(() => User, (user) => user.projects, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
