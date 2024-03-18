@@ -66,6 +66,7 @@ export class TimersService {
       .createQueryBuilder('timer')
       .leftJoinAndSelect('timer.timerOwner', 'user')
       .leftJoinAndSelect('timer.timerIntervals', 'timerIntervals')
+      .leftJoinAndSelect('timer.tags', 'tags')
       .where('user.id = :userId', { userId: user.id })
       .getMany();
 
