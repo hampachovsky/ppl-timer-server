@@ -143,6 +143,12 @@ export class TimersService {
     user: User,
   ) {
     const timer = await this.isTimerExist(id, user.id);
+
+    if (updateTagsForTimerDto.tagIds.length < 1) {
+      timer.tags = [];
+      return await this.timerRepository.save(timer);
+    }
+
     const tagsToUpdateTimer = await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoin('tag.user', 'user')
@@ -151,9 +157,7 @@ export class TimersService {
       })
       .andWhere('user.id =:userId', { userId: user.id })
       .getMany();
-    /*     const tagsToUpdateTimer = await this.tagRepository.find({
-      where: { id: In(updateTagsForTimer.tagIds), user: { id: user.id } },
-    }); */
+
     timer.tags = tagsToUpdateTimer;
     return await this.timerRepository.save(timer);
   }
