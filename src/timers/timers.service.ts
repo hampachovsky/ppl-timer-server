@@ -67,6 +67,7 @@ export class TimersService {
       .leftJoinAndSelect('timer.timerOwner', 'user')
       .leftJoinAndSelect('timer.timerIntervals', 'timerIntervals')
       .leftJoinAndSelect('timer.tags', 'tags')
+      .leftJoinAndSelect('timer.assignedProject', 'assignedProject')
       .where('user.id = :userId', { userId: user.id })
       .getMany();
 
@@ -90,6 +91,10 @@ export class TimersService {
     user: User,
   ) {
     const timer = await this.isTimerExist(id, user.id);
+    if (assignProjectToTimerDto.projectId === null) {
+      timer.assignedProject = null;
+      return await this.timerRepository.save(timer);
+    }
     const projectToAssignTimer = await this.projectRepository
       .createQueryBuilder('project')
       .leftJoin('project.projectOwner', 'user')
