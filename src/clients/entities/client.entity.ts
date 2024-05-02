@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Project } from 'src/projects/entities/project.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -27,6 +28,7 @@ export class Client {
   archived: boolean;
 
   // * Relations
+  @Exclude()
   @ManyToOne(() => User, (user) => user.clients, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

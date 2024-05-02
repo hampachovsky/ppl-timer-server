@@ -40,15 +40,20 @@ export class ClientsService {
     return await this.clientRepository.save(newClient);
   }
 
-  async findAllByUserId(user: User) {
+  async findAllByUserId(user: User, query: { type: string; qs: string }) {
     const clients = await this.clientRepository
       .createQueryBuilder('client')
       .leftJoinAndSelect('client.user', 'user')
       .where('user.id = :userId', { userId: user.id })
+      .andWhere('client.clientName like :qs', { qs: `%${query.qs || ''}%` })
       .getMany();
 
     if (clients.length <= 0)
       throw new HttpException('Clients not found', HttpStatus.NOT_FOUND);
+    if (query.type === 'active')
+      return clients.filter((client) => client.archived === false);
+    if (query.type === 'archived')
+      return clients.filter((client) => client.archived);
     return clients;
   }
 
