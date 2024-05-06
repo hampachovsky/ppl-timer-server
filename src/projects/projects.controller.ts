@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -31,8 +32,12 @@ export class ProjectsController {
 
   @Get('/byUser')
   @UseGuards(JwtAuthGuard)
-  findAllByUserId(@Req() req) {
-    return this.projectsService.findAllByUserId(req.user);
+  findAllByUserId(
+    @Req() req,
+    @Query()
+    query: { type: string; qs: string; client: string; billable: string },
+  ) {
+    return this.projectsService.findAllByUserId(req.user, query);
   }
 
   @Get(':id')

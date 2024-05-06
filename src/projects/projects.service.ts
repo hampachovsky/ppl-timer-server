@@ -60,16 +60,52 @@ export class ProjectsService {
     return this.projectRepository.find();
   }
 
-  async findAllByUserId(user: User) {
-    const projects = await this.projectRepository
+  async findAllByUserId(
+    user: User,
+    query: { type: string; qs: string; client: string; billable: string },
+  ) {
+    const queryBuilder = this.projectRepository
       .createQueryBuilder('project')
       .leftJoinAndSelect('project.projectOwner', 'user')
       .leftJoinAndSelect('project.client', 'client')
-      .where('user.id = :userId', { userId: user.id })
-      .getMany();
+      .leftJoin('project.timers', 'timers')
+      .addSelect('timers.timerSummary')
+      .where('user.id = :userId', { userId: user.id });
 
+    if (query.qs) {
+      queryBuilder.andWhere('project.projectName like :qs', {
+        qs: `%${query.qs}%`,
+      });
+    }
+
+    if (query.type === 'active') {
+      queryBuilder.andWhere('project.archived = :archived', {
+        archived: false,
+      });
+    } else if (query.type === 'archived') {
+      queryBuilder.andWhere('project.archived = :archived', { archived: true });
+    }
+
+    if (query.client === 'none') {
+      queryBuilder.andWhere('client is NULL');
+    } else if (query.client !== 'all') {
+      queryBuilder.andWhere('client.id = :clientId', {
+        clientId: +query.client,
+      });
+    }
+
+    if (query.billable === 'billable') {
+      queryBuilder.andWhere('project.billable = :billable', { billable: true });
+    } else if (query.billable === 'nonBillable') {
+      queryBuilder.andWhere('project.billable = :billable', {
+        billable: false,
+      });
+    }
+
+    const projects = await queryBuilder.getMany();
     if (projects.length <= 0)
       throw new HttpException('Projects not found', HttpStatus.NOT_FOUND);
+
     return projects;
   }
 
