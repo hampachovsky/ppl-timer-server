@@ -123,6 +123,7 @@ export class ProjectsService {
         clientId: updateProjectDto.clientId,
       })
       .getOne();
+
     return await this.projectRepository.update(id, {
       projectName: updateProjectDto.projectName,
       projectDescription: updateProjectDto.projectDescription,
