@@ -41,13 +41,28 @@ export class TasksService {
     return await this.taskRepository.save(newTask);
   }
 
-  async getByProject(projectId: number) {
-    const tasks = await this.taskRepository
+  async getByProject(projectId: number, query: { type: string; qs: string }) {
+    const queryBuilder = await this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.project', 'project')
-      .where('project.id = :projectId', { projectId })
-      .getMany();
+      .where('project.id = :projectId', { projectId });
 
+    if (query.qs) {
+      queryBuilder.andWhere('task.task like :qs', {
+        qs: `%${query.qs}%`,
+      });
+    }
+    if (query.type === 'completed') {
+      queryBuilder.andWhere('task.completed = :completed', {
+        completed: true,
+      });
+    } else if (query.type === 'notcompleted') {
+      queryBuilder.andWhere('task.completed = :completed', {
+        completed: false,
+      });
+    }
+
+    const tasks = await queryBuilder.getMany();
     if (tasks.length <= 0)
       throw new HttpException('Tasks not found', HttpStatus.NOT_FOUND);
     return tasks;
