@@ -19,11 +19,11 @@ import { UserModule } from './user/user.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        /*  host: configService.get('host'),
-        port: +configService.get<number>('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'), */
+        // host: configService.get('host'),
+        // port: +configService.get<number>('DB_PORT'),
+        // username: configService.get('DB_USERNAME'),
+        // password: configService.get('DB_PASSWORD'),
+        // database: configService.get('DB_NAME'),
         url: configService.get('DB_URL'),
         // autoLoadEntities: true,
         entities: [__dirname + '/**/*.entity{.js, .ts}'],
